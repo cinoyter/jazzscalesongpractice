@@ -1,25 +1,51 @@
-import logo from './logo.svg';
+import React from 'react';
+import 'fomantic-ui-css/semantic.css';
 import './App.css';
+import ChordSearch from './ChordSearch'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { Container, Header } from 'semantic-ui-react';
+
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { 
+      posts: []
+    }
+  }
+
+  componentDidMount() {
+    const url = "https://jsonplaceholder.typicode.com/albums/1/photos";
+    fetch(url)
+      .then(response => response.json())
+      .then(json => this.setState( { posts: json } ));
+  }
+  
+  render() {
+    const { posts } = this.state;
+    return( 
+
+      <Container>
+        <ChordSearch></ChordSearch>
+        <Header>
+          <h1 class="display-4">Posts from our API call</h1>
+        </Header>
+        {posts.map( (post) => (
+          <div className="card" key={post.id}>
+            <div className="card-header">
+              ID #{post.id} {post.title}
+            </div>
+            <div className="card-body">
+              <img src={post.thumbnailUrl}></img>
+            </div>
+          </div>
+
+        ))}
+      </Container>
+    );
+
+  }
+
 }
 
 export default App;
