@@ -1,51 +1,39 @@
 import React from 'react';
-import 'fomantic-ui-css/semantic.css';
+import { useState } from 'react';
 import './App.css';
-import ChordSearch from './ChordSearch'
+import MeasureEditor from './editor/MeasureEditor';
+import { Container } from '@mantine/core';
+import update from 'immutability-helper';
 
-import { Container, Header } from 'semantic-ui-react';
-
-
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { 
-      posts: []
-    }
-  }
-
-  componentDidMount() {
-    const url = "https://jsonplaceholder.typicode.com/albums/1/photos";
-    fetch(url)
-      .then(response => response.json())
-      .then(json => this.setState( { posts: json } ));
-  }
+function App() {
   
-  render() {
-    const { posts } = this.state;
-    return( 
+  const [ state, setState ] = useState( {
+    songName: 'On Blue Narwhal Avenue',
+    measures: [[ 'Eb dorian', 'F minor' ], ['C# phrygian dominant'] ]
+  });
 
-      <Container>
-        <ChordSearch></ChordSearch>
-        <Header>
-          <h1 class="display-4">Posts from our API call</h1>
-        </Header>
-        {posts.map( (post) => (
-          <div className="card" key={post.id}>
-            <div className="card-header">
-              ID #{post.id} {post.title}
-            </div>
-            <div className="card-body">
-              <img src={post.thumbnailUrl}></img>
-            </div>
-          </div>
+  function onMeasureChange (idx, val) {
+    const m = state.measures;
+    m[idx] = val;
 
-        ))}
-      </Container>
-    );
+    const newState = update( state.measures, {
+        [idx]: { $set: val }
+    });
 
+    setState( {measures: newState } );
   }
 
+  return( 
+    <Container>
+      <h2>{state.measures}</h2>
+
+      { state.measures.map( (measure, index) => {
+        return <MeasureEditor measure={measure} onMeasureChange={(val) => onMeasureChange(index, val)}></MeasureEditor>
+
+      }) }
+      
+    </Container>
+  );
 }
 
 export default App;
